@@ -1,0 +1,75 @@
+<div class="dashboard">
+  <h2>Dashboard Overview</h2>
+
+  <div *ngIf="loading" class="loading">⏳ Loading statistics...</div>
+  <div *ngIf="error" class="error">❌ {{ error }}</div>
+
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+      <div class="stat-card available">
+        <div class="stat-number">{{ stats.summary.totalAvailable }}</div>
+        <div class="stat-label">Available Pieces</div>
+      </div>
+      <div class="stat-card reserved">
+        <div class="stat-number">{{ stats.summary.totalReserved }}</div>
+        <div class="stat-label">Reserved Pieces</div>
+      </div>
+      <div class="stat-card used">
+        <div class="stat-number">{{ stats.summary.totalUsed }}</div>
+        <div class="stat-label">Used Pieces</div>
+      </div>
+      <div class="stat-card total">
+        <div class="stat-number">{{ stats.summary.total }}</div>
+        <div class="stat-label">Total Tracked</div>
+      </div>
+    </div>
+
+    <!-- By Material Grade -->
+    <div class="section-card">
+      <h3>Inventory by Material Grade</h3>
+      <div class="grade-list">
+        <div *ngFor="let grade of stats.byGrade" class="grade-item">
+          <div class="grade-name">{{ grade._id }}</div>
+          <div class="grade-details">
+            <span>{{ grade.count }} pieces</span>
+            <span class="separator">•</span>
+            <span>{{ grade.totalArea.toFixed(2) }} sq in</span>
+          </div>
+        </div>
+        <div *ngIf="stats.byGrade.length === 0" class="empty-state">
+          No scrap inventory yet
+        </div>
+      </div>
+    </div>
+
+    <!-- By Thickness -->
+    <div class="section-card">
+      <h3>Inventory by Thickness</h3>
+      <div class="thickness-list">
+        <div *ngFor="let thickness of stats.byThickness" class="thickness-item">
+          <div class="thickness-value">{{ thickness._id }}"</div>
+          <div class="thickness-count">{{ thickness.count }} pieces</div>
+        </div>
+        <div *ngIf="stats.byThickness.length === 0" class="empty-state">
+          No scrap inventory yet
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-card">
+      <h3>Recent Activity (Last 7 Days)</h3>
+      <div class="activity-grid">
+        <div class="activity-item">
+          <div class="activity-number">{{ stats.recentActivity.addedLast7Days }}</div>
+          <div class="activity-label">Pieces Added</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-number">{{ stats.recentActivity.usedLast7Days }}</div>
+          <div class="activity-label">Pieces Used</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

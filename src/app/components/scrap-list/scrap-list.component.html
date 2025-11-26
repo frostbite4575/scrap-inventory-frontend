@@ -1,0 +1,93 @@
+<div class="scrap-list">
+  <div class="list-header">
+    <h2>All Available Scrap</h2>
+    <button class="btn btn-secondary" (click)="loadScrap()">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">⏳ Loading scrap inventory...</div>
+  <div *ngIf="error" class="error">❌ {{ error }}</div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="scrapPieces.length === 0" class="no-results">
+      📭 No scrap pieces found
+    </div>
+
+    <div class="scrap-grid">
+      <div *ngFor="let piece of scrapPieces" class="scrap-card">
+        <!-- Header -->
+        <div class="scrap-header">
+          <div class="scrap-title">
+            {{ piece.length }}" × {{ piece.width }}" × {{ piece.thickness }}"
+          </div>
+          <span class="badge" [ngClass]="'badge-' + piece.status">
+            {{ piece.status.toUpperCase() }}
+          </span>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="scrap-details">
+          <div class="detail-item">
+            <div class="detail-label">Material Grade</div>
+            <div class="detail-value">{{ piece.materialGrade }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Area</div>
+            <div class="detail-value">{{ piece.area?.toFixed(2) }} sq in</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-value">{{ piece.location || 'Not specified' }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Added By</div>
+            <div class="detail-value">{{ piece.addedBy }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Date Added</div>
+            <div class="detail-value">{{ formatDate(piece.dateAdded) }}</div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div *ngIf="piece.notes" class="scrap-notes">
+          <strong>Notes:</strong> {{ piece.notes }}
+        </div>
+
+        <!-- Reserved Info -->
+        <div *ngIf="piece.status === 'reserved'" class="reserved-info">
+          Reserved for: {{ piece.reservedFor || 'Unknown job' }}
+        </div>
+
+        <!-- Actions -->
+        <div class="scrap-actions">
+          <button 
+            *ngIf="piece.status === 'available'" 
+            class="btn btn-success btn-sm"
+            (click)="reservePiece(piece)">
+            📌 Reserve
+          </button>
+          
+          <button 
+            *ngIf="piece.status === 'available'" 
+            class="btn btn-danger btn-sm"
+            (click)="markAsUsed(piece)">
+            ✓ Mark as Used
+          </button>
+
+          <button 
+            *ngIf="piece.status === 'reserved'" 
+            class="btn btn-secondary btn-sm"
+            (click)="unreservePiece(piece)">
+            🔓 Unreserve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

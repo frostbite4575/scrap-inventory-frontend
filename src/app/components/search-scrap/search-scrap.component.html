@@ -1,0 +1,155 @@
+<div class="search-scrap">
+  <h2>Search Scrap Inventory</h2>
+
+  <!-- Search Form -->
+  <div class="search-card">
+    <form (ngSubmit)="onSearch()" #searchForm="ngForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="materialGrade">Material Grade</label>
+          <select 
+            id="materialGrade" 
+            name="materialGrade"
+            [(ngModel)]="filters.materialGrade">
+            <option value="">All Grades</option>
+            <option *ngFor="let grade of materialGrades" [value]="grade">
+              {{ grade }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="thickness">Thickness (exact)</label>
+          <input 
+            type="number" 
+            id="thickness" 
+            name="thickness"
+            [(ngModel)]="filters.thickness"
+            step="0.001"
+            placeholder="e.g., 0.25">
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input 
+            type="text" 
+            id="location" 
+            name="location"
+            [(ngModel)]="filters.location"
+            placeholder="Bin, rack, etc.">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="minLength">Minimum Length</label>
+          <input 
+            type="number" 
+            id="minLength" 
+            name="minLength"
+            [(ngModel)]="filters.minLength"
+            step="0.01"
+            placeholder="Minimum length">
+        </div>
+
+        <div class="form-group">
+          <label for="minWidth">Minimum Width</label>
+          <input 
+            type="number" 
+            id="minWidth" 
+            name="minWidth"
+            [(ngModel)]="filters.minWidth"
+            step="0.01"
+            placeholder="Minimum width">
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <span *ngIf="!loading">🔍 Search</span>
+          <span *ngIf="loading">⏳ Searching...</span>
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="clearSearch()"
+          [disabled]="loading">
+          Clear
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Search Results -->
+  <div *ngIf="searched" class="results-section">
+    <h3>Search Results ({{ searchResults.length }} found)</h3>
+
+    <div *ngIf="loading" class="loading">⏳ Searching...</div>
+
+    <div *ngIf="!loading && searchResults.length === 0" class="no-results">
+      📭 No scrap pieces match your search criteria
+    </div>
+
+    <div *ngIf="!loading && searchResults.length > 0" class="scrap-grid">
+      <div *ngFor="let piece of searchResults" class="scrap-card">
+        <!-- Header -->
+        <div class="scrap-header">
+          <div class="scrap-title">
+            {{ piece.length }}" × {{ piece.width }}" × {{ piece.thickness }}"
+          </div>
+          <span class="badge badge-available">
+            {{ piece.status.toUpperCase() }}
+          </span>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="scrap-details">
+          <div class="detail-item">
+            <div class="detail-label">Material Grade</div>
+            <div class="detail-value">{{ piece.materialGrade }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Area</div>
+            <div class="detail-value">{{ piece.area?.toFixed(2) }} sq in</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-value">{{ piece.location || 'Not specified' }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Added By</div>
+            <div class="detail-value">{{ piece.addedBy }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Date Added</div>
+            <div class="detail-value">{{ formatDate(piece.dateAdded) }}</div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div *ngIf="piece.notes" class="scrap-notes">
+          <strong>Notes:</strong> {{ piece.notes }}
+        </div>
+
+        <!-- Actions -->
+        <div class="scrap-actions">
+          <button 
+            class="btn btn-success btn-sm"
+            (click)="reservePiece(piece)">
+            📌 Reserve
+          </button>
+          
+          <button 
+            class="btn btn-danger btn-sm"
+            (click)="markAsUsed(piece)">
+            ✓ Mark as Used
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

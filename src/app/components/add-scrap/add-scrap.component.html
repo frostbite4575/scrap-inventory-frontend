@@ -1,0 +1,118 @@
+<div class="add-scrap">
+  <h2>Add New Scrap Piece</h2>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="successMessage" class="message success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message error">
+    {{ errorMessage }}
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #scrapForm="ngForm">
+    <!-- Dimensions Row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="length">Length (inches) *</label>
+        <input 
+          type="number" 
+          id="length" 
+          name="length"
+          [(ngModel)]="scrap.length" 
+          step="0.01" 
+          required
+          min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="width">Width (inches) *</label>
+        <input 
+          type="number" 
+          id="width" 
+          name="width"
+          [(ngModel)]="scrap.width" 
+          step="0.01" 
+          required
+          min="0">
+      </div>
+
+      <div class="form-group">
+        <label for="thickness">Thickness (inches) *</label>
+        <input 
+          type="number" 
+          id="thickness" 
+          name="thickness"
+          [(ngModel)]="scrap.thickness" 
+          step="0.001" 
+          required
+          min="0">
+      </div>
+    </div>
+
+    <!-- Material and Location Row -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="materialGrade">Material Grade *</label>
+        <select 
+          id="materialGrade" 
+          name="materialGrade"
+          [(ngModel)]="scrap.materialGrade" 
+          required>
+          <option value="">Select Grade</option>
+          <option *ngFor="let grade of materialGrades" [value]="grade">
+            {{ grade }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input 
+          type="text" 
+          id="location" 
+          name="location"
+          [(ngModel)]="scrap.location"
+          placeholder="e.g., Bin A1, Rack 2">
+      </div>
+
+      <div class="form-group">
+        <label for="addedBy">Your Name *</label>
+        <input 
+          type="text" 
+          id="addedBy" 
+          name="addedBy"
+          [(ngModel)]="scrap.addedBy" 
+          required>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-group">
+      <label for="notes">Notes</label>
+      <textarea 
+        id="notes" 
+        name="notes"
+        [(ngModel)]="scrap.notes"
+        rows="3" 
+        placeholder="Any notes about this piece..."></textarea>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn btn-primary" 
+        [disabled]="loading || !scrapForm.form.valid">
+        <span *ngIf="!loading">Add Scrap Piece</span>
+        <span *ngIf="loading">⏳ Adding...</span>
+      </button>
+      <button 
+        type="button" 
+        class="btn btn-secondary" 
+        (click)="clearForm()"
+        [disabled]="loading">
+        Clear Form
+      </button>
+    </div>
+  </form>
+</div>
