@@ -7,8 +7,7 @@ import { ScrapPiece, DashboardStats } from '../models/scrap.model';
   providedIn: 'root'
 })
 export class ScrapService {
-  private apiUrl = 'http://localhost:3000/api';
-
+  private apiUrl = 'https://scrap-inventory-backend.onrender.com/api';
   constructor(private http: HttpClient) { }
 
   // Get all scrap pieces with optional filters
