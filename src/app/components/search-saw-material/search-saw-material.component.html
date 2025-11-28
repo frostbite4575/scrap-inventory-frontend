@@ -1,0 +1,104 @@
+<div class="search-container">
+  <h2>Search Saw Materials</h2>
+
+  <div class="search-form">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="materialType">Material Type</label>
+        <select id="materialType" [(ngModel)]="filters.materialType">
+          <option value="">All Types</option>
+          <option *ngFor="let type of materialTypes" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="materialGrade">Material Grade</label>
+        <select id="materialGrade" [(ngModel)]="filters.materialGrade">
+          <option value="">All Grades</option>
+          <option *ngFor="let grade of materialGrades" [value]="grade">
+            {{ grade }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" [(ngModel)]="filters.status">
+          <option value="">All</option>
+          <option value="available">Available</option>
+          <option value="reserved">Reserved</option>
+          <option value="used">Used</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="minLength">Min Length (in)</label>
+        <input type="number" id="minLength" [(ngModel)]="filters.minLength" step="0.01">
+      </div>
+
+      <div class="form-group">
+        <label for="maxLength">Max Length (in)</label>
+        <input type="number" id="maxLength" [(ngModel)]="filters.maxLength" step="0.01">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" (click)="search()">
+        🔍 Search
+      </button>
+      <button class="btn btn-secondary" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">⏳ Searching...</div>
+  <div *ngIf="error" class="error">❌ {{ error }}</div>
+
+  <div *ngIf="searched && !loading && !error" class="results">
+    <h3>Results: {{ materials.length }} material(s) found</h3>
+
+    <div *ngIf="materials.length === 0" class="no-results">
+      No materials match your search criteria
+    </div>
+
+    <div *ngIf="materials.length > 0" class="material-grid">
+      <div *ngFor="let material of materials" class="material-card">
+        <div class="material-header">
+          <div class="material-title">
+            {{ formatMaterialType(material.materialType) }}: {{ material.formattedDimensions }}
+          </div>
+          <span class="badge" [ngClass]="'badge-' + material.status">
+            {{ material.status.toUpperCase() }}
+          </span>
+        </div>
+
+        <div class="material-details">
+          <div class="detail-item">
+            <div class="detail-label">Length</div>
+            <div class="detail-value">{{ material.length }}"</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Material Grade</div>
+            <div class="detail-value">{{ material.materialGrade }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-value">{{ material.location || 'Not specified' }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Date Added</div>
+            <div class="detail-value">{{ formatDate(material.dateAdded) }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

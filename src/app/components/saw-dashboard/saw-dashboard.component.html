@@ -1,0 +1,71 @@
+<div class="dashboard">
+  <h2>Saw Materials Dashboard</h2>
+
+  <div *ngIf="loading" class="loading">⏳ Loading statistics...</div>
+  <div *ngIf="error" class="error">❌ {{ error }}</div>
+
+  <div *ngIf="stats && !loading" class="dashboard-content">
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+      <div class="stat-card available">
+        <div class="stat-number">{{ stats.summary.totalAvailable }}</div>
+        <div class="stat-label">Available Materials</div>
+      </div>
+      <div class="stat-card reserved">
+        <div class="stat-number">{{ stats.summary.totalReserved }}</div>
+        <div class="stat-label">Reserved Materials</div>
+      </div>
+      <div class="stat-card used">
+        <div class="stat-number">{{ stats.summary.totalUsed }}</div>
+        <div class="stat-label">Used Materials</div>
+      </div>
+      <div class="stat-card total">
+        <div class="stat-number">{{ stats.summary.total }}</div>
+        <div class="stat-label">Total Tracked</div>
+      </div>
+    </div>
+
+    <!-- By Material Type -->
+    <div class="section-card">
+      <h3>Inventory by Material Type</h3>
+      <div class="type-list">
+        <div *ngFor="let type of stats.byType" class="type-item">
+          <div class="type-name">{{ formatMaterialType(type._id) }}</div>
+          <div class="type-count">{{ type.count }} pieces</div>
+        </div>
+        <div *ngIf="stats.byType.length === 0" class="empty-state">
+          No saw materials in inventory yet
+        </div>
+      </div>
+    </div>
+
+    <!-- By Material Grade -->
+    <div class="section-card">
+      <h3>Inventory by Material Grade</h3>
+      <div class="grade-list">
+        <div *ngFor="let grade of stats.byGrade" class="grade-item">
+          <div class="grade-name">{{ grade._id }}</div>
+          <div class="grade-count">{{ grade.count }} pieces</div>
+        </div>
+        <div *ngIf="stats.byGrade.length === 0" class="empty-state">
+          No saw materials in inventory yet
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-card">
+      <h3>Recent Activity (Last 7 Days)</h3>
+      <div class="activity-grid">
+        <div class="activity-item">
+          <div class="activity-number">{{ stats.recentActivity.addedLast7Days }}</div>
+          <div class="activity-label">Materials Added</div>
+        </div>
+        <div class="activity-item">
+          <div class="activity-number">{{ stats.recentActivity.usedLast7Days }}</div>
+          <div class="activity-label">Materials Used</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
