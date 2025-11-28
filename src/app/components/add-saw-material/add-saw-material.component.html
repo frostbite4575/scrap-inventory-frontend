@@ -1,0 +1,147 @@
+<div class="add-saw-material">
+  <h2>Add New Saw Material</h2>
+
+  <!-- Success/Error Messages -->
+  <div *ngIf="successMessage" class="message success">
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="message error">
+    {{ errorMessage }}
+  </div>
+
+  <form (ngSubmit)="onSubmit()" #materialForm="ngForm">
+    <!-- Material Type -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="materialType">Material Type *</label>
+        <select
+          id="materialType"
+          name="materialType"
+          [(ngModel)]="material.materialType"
+          (change)="onMaterialTypeChange()"
+          required>
+          <option *ngFor="let type of materialTypes" [value]="type.value">
+            {{ type.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="length">Length (inches) *</label>
+        <input
+          type="number"
+          id="length"
+          name="length"
+          [(ngModel)]="material.length"
+          step="0.01"
+          required
+          min="0">
+      </div>
+    </div>
+
+    <!-- Dimensions (dynamic based on type) -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="dim1">{{ dimensionLabels[0] || 'Dimension 1' }} *</label>
+        <input
+          type="number"
+          id="dim1"
+          name="dim1"
+          [(ngModel)]="material.dim1"
+          step="0.001"
+          required
+          min="0">
+      </div>
+
+      <div class="form-group" *ngIf="needsDim2">
+        <label for="dim2">{{ dimensionLabels[1] || 'Dimension 2' }} *</label>
+        <input
+          type="number"
+          id="dim2"
+          name="dim2"
+          [(ngModel)]="material.dim2"
+          step="0.001"
+          required
+          min="0">
+      </div>
+
+      <div class="form-group" *ngIf="needsDim3">
+        <label for="dim3">{{ dimensionLabels[2] || 'Dimension 3' }} *</label>
+        <input
+          type="number"
+          id="dim3"
+          name="dim3"
+          [(ngModel)]="material.dim3"
+          step="0.001"
+          required
+          min="0">
+      </div>
+    </div>
+
+    <!-- Material Grade and Location -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="materialGrade">Material Grade *</label>
+        <select
+          id="materialGrade"
+          name="materialGrade"
+          [(ngModel)]="material.materialGrade"
+          required>
+          <option value="">Select Grade</option>
+          <option *ngFor="let grade of materialGrades" [value]="grade">
+            {{ grade }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input
+          type="text"
+          id="location"
+          name="location"
+          [(ngModel)]="material.location"
+          placeholder="e.g., Rack 3, Bay A">
+      </div>
+
+      <div class="form-group">
+        <label for="addedBy">Your Name *</label>
+        <input
+          type="text"
+          id="addedBy"
+          name="addedBy"
+          [(ngModel)]="material.addedBy"
+          required>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-group">
+      <label for="notes">Notes</label>
+      <textarea
+        id="notes"
+        name="notes"
+        [(ngModel)]="material.notes"
+        rows="3"
+        placeholder="Any notes about this material..."></textarea>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="loading || !materialForm.form.valid">
+        <span *ngIf="!loading">Add Saw Material</span>
+        <span *ngIf="loading">⏳ Adding...</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="clearForm()"
+        [disabled]="loading">
+        Clear Form
+      </button>
+    </div>
+  </form>
+</div>

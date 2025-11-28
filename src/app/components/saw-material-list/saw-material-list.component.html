@@ -1,0 +1,93 @@
+<div class="saw-material-list">
+  <div class="list-header">
+    <h2>All Available Saw Materials</h2>
+    <button class="btn btn-secondary" (click)="loadMaterials()">
+      🔄 Refresh
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">⏳ Loading saw materials inventory...</div>
+  <div *ngIf="error" class="error">❌ {{ error }}</div>
+
+  <div *ngIf="!loading && !error">
+    <div *ngIf="sawMaterials.length === 0" class="no-results">
+      📭 No saw materials found
+    </div>
+
+    <div class="material-grid">
+      <div *ngFor="let material of sawMaterials" class="material-card">
+        <!-- Header -->
+        <div class="material-header">
+          <div class="material-title">
+            {{ formatMaterialType(material.materialType) }}: {{ material.formattedDimensions }}
+          </div>
+          <span class="badge" [ngClass]="'badge-' + material.status">
+            {{ material.status.toUpperCase() }}
+          </span>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="material-details">
+          <div class="detail-item">
+            <div class="detail-label">Length</div>
+            <div class="detail-value">{{ material.length }}"</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Material Grade</div>
+            <div class="detail-value">{{ material.materialGrade }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Location</div>
+            <div class="detail-value">{{ material.location || 'Not specified' }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Added By</div>
+            <div class="detail-value">{{ material.addedBy }}</div>
+          </div>
+
+          <div class="detail-item">
+            <div class="detail-label">Date Added</div>
+            <div class="detail-value">{{ formatDate(material.dateAdded) }}</div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div *ngIf="material.notes" class="material-notes">
+          <strong>Notes:</strong> {{ material.notes }}
+        </div>
+
+        <!-- Reserved Info -->
+        <div *ngIf="material.status === 'reserved'" class="reserved-info">
+          Reserved for: {{ material.reservedFor || 'Unknown job' }}
+        </div>
+
+        <!-- Actions -->
+        <div class="material-actions">
+          <button
+            *ngIf="material.status === 'available'"
+            class="btn btn-success btn-sm"
+            (click)="reserveMaterial(material)">
+            📌 Reserve
+          </button>
+
+          <button
+            *ngIf="material.status === 'available'"
+            class="btn btn-danger btn-sm"
+            (click)="markAsUsed(material)">
+            ✓ Mark as Used
+          </button>
+
+          <button
+            *ngIf="material.status === 'reserved'"
+            class="btn btn-secondary btn-sm"
+            (click)="unreserveMaterial(material)">
+            🔓 Unreserve
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
