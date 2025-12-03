@@ -7,7 +7,7 @@ import { SawMaterial, SawDashboardStats, MaterialTypeInfo } from '../models/saw-
   providedIn: 'root'
 })
 export class SawMaterialService {
-  private apiUrl = 'https://scrap-inventory-backend.onrender.com/api';
+  private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
 
@@ -79,5 +79,16 @@ export class SawMaterialService {
     return this.http.get<{ grades: string[] }>(
       `${this.apiUrl}/saw-material/meta/grades`
     );
+  }
+
+  // Get material catalog - all available materials
+  getCatalog(type?: string): Observable<any> {
+    const params = type ? new HttpParams().set('type', type) : new HttpParams();
+    return this.http.get(`${this.apiUrl}/saw-material/catalog`, { params });
+  }
+
+  // Get specific catalog material by ID
+  getCatalogMaterial(materialId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/saw-material/catalog/${materialId}`);
   }
 }

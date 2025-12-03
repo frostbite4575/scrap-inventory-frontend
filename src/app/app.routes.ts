@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { HomeComponent } from './components/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AddScrapComponent } from './components/add-scrap/add-scrap.component';
 import { ScrapListComponent } from './components/scrap-list/scrap-list.component';
@@ -9,17 +10,17 @@ import { SawMaterialListComponent } from './components/saw-material-list/saw-mat
 import { SearchSawMaterialComponent } from './components/search-saw-material/search-saw-material.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  { path: '', component: HomeComponent },
 
   // Plate/Plasma Table Routes
-  { path: 'dashboard', component: DashboardComponent },
-  { path: 'add', component: AddScrapComponent },
-  { path: 'list', component: ScrapListComponent },
-  { path: 'search', component: SearchScrapComponent },
+  { path: 'plasma/dashboard', component: DashboardComponent },
+  { path: 'plasma/add', component: AddScrapComponent },
+  { path: 'plasma/list', component: ScrapListComponent },
+  { path: 'plasma/search', component: SearchScrapComponent },
 
   // Saw Materials Routes
-  { path: 'saw-dashboard', component: SawDashboardComponent },
-  { path: 'saw-add', component: AddSawMaterialComponent },
-  { path: 'saw-list', component: SawMaterialListComponent },
-  { path: 'saw-search', component: SearchSawMaterialComponent }
+  { path: 'saw/dashboard', component: SawDashboardComponent },
+  { path: 'saw/add', component: AddSawMaterialComponent },
+  { path: 'saw/list', component: SawMaterialListComponent },
+  { path: 'saw/search', component: SearchSawMaterialComponent }
 ];

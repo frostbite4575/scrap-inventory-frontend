@@ -13,21 +13,20 @@ import { SawMaterial, MaterialType, MaterialTypeInfo } from '../../models/saw-ma
   styleUrl: './add-saw-material.component.css'
 })
 export class AddSawMaterialComponent implements OnInit {
-  material: Partial<SawMaterial> = {
-    materialType: 'angle',
-    length: 0,
-    dim1: 0,
-    dim2: 0,
-    dim3: 0,
-    materialGrade: '',
-    location: '',
-    addedBy: '',
-    notes: '',
-    status: 'available'
-  };
+  // Form data
+  selectedMaterialType: string = '';
+  selectedCatalogMaterialId: string = '';
+  length: number = 0;
+  location: string = '';
+  addedBy: string = '';
+  notes: string = '';
 
-  materialTypes: MaterialTypeInfo[] = [];
-  materialGrades: string[] = [];
+  // Catalog data
+  materialTypes: string[] = [];
+  catalogMaterials: any[] = [];
+  selectedCatalogMaterial: any = null;
+
+  // UI state
   successMessage = '';
   errorMessage = '';
   loading = false;
@@ -38,85 +37,55 @@ export class AddSawMaterialComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Load material types from API
-    this.sawMaterialService.getMaterialTypes().subscribe({
+    // Load available material types from catalog
+    this.sawMaterialService.getCatalog().subscribe({
       next: (response) => {
         this.materialTypes = response.types;
       },
       error: (err) => {
         console.error('Error loading material types:', err);
-        // Fallback to hardcoded types
-        this.materialTypes = [
-          { value: 'angle', label: 'Angle', dimensions: ['leg1', 'leg2', 'wall'] },
-          { value: 'tube', label: 'Tube (Rectangular)', dimensions: ['width', 'height', 'wall'] },
-          { value: 'square-stock', label: 'Square Stock', dimensions: ['width', 'height'] },
-          { value: 'round-stock', label: 'Round Stock', dimensions: ['diameter'] },
-          { value: 'dom', label: 'D.O.M.', dimensions: ['OD', 'wall'] },
-          { value: 'pipe', label: 'Pipe', dimensions: ['ID'] },
-          { value: 'i-beam', label: 'I-Beam', dimensions: ['depth', 'weight/ft'] },
-          { value: 'channel', label: 'Channel', dimensions: ['depth', 'weight/ft'] }
-        ];
+        this.errorMessage = 'Failed to load material types';
       }
     });
+  }
 
-    // Load material grades from API
-    this.sawMaterialService.getMaterialGrades().subscribe({
+  // When material type is selected, load catalog materials for that type
+  onMaterialTypeChange() {
+    this.catalogMaterials = [];
+    this.selectedCatalogMaterialId = '';
+    this.selectedCatalogMaterial = null;
+
+    if (!this.selectedMaterialType) {
+      return;
+    }
+
+    this.sawMaterialService.getCatalog(this.selectedMaterialType).subscribe({
       next: (response) => {
-        this.materialGrades = response.grades;
+        this.catalogMaterials = response.materials || [];
       },
       error: (err) => {
-        console.error('Error loading material grades:', err);
-        // Fallback to hardcoded grades
-        this.materialGrades = ['A36', 'A572-50', '304SS', '316SS', '5052-H32', '6061-T6', 'A500', 'A513'];
+        console.error('Error loading catalog materials:', err);
+        this.errorMessage = 'Failed to load materials for this type';
       }
     });
   }
 
-  get currentMaterialType(): MaterialTypeInfo | undefined {
-    return this.materialTypes.find(t => t.value === this.material.materialType);
-  }
-
-  get dimensionLabels(): string[] {
-    return this.currentMaterialType?.dimensions || [];
-  }
-
-  // Check if we need dimension fields based on material type
-  get needsDim2(): boolean {
-    const type = this.material.materialType;
-    return type === 'angle' || type === 'tube' || type === 'square-stock' ||
-           type === 'dom' || type === 'i-beam' || type === 'channel';
-  }
-
-  get needsDim3(): boolean {
-    const type = this.material.materialType;
-    return type === 'angle' || type === 'tube';
-  }
-
-  onMaterialTypeChange() {
-    // Reset dimension values when type changes
-    this.material.dim2 = 0;
-    this.material.dim3 = 0;
+  // When a specific catalog material is selected, store its details
+  onCatalogMaterialChange() {
+    const selected = this.catalogMaterials.find(m => m.id === this.selectedCatalogMaterialId);
+    this.selectedCatalogMaterial = selected || null;
   }
 
   onSubmit() {
     // Validate required fields
-    if (!this.material.length || !this.material.dim1 ||
-        !this.material.materialGrade || !this.material.addedBy) {
+    if (!this.selectedCatalogMaterialId || !this.length || !this.addedBy) {
       this.errorMessage = 'Please fill in all required fields';
       this.successMessage = '';
       return;
     }
 
-    // Validate dimension 2 if needed
-    if (this.needsDim2 && !this.material.dim2) {
-      this.errorMessage = 'Please fill in all required dimension fields';
-      this.successMessage = '';
-      return;
-    }
-
-    // Validate dimension 3 if needed
-    if (this.needsDim3 && !this.material.dim3) {
-      this.errorMessage = 'Please fill in all required dimension fields';
+    if (!this.selectedCatalogMaterial) {
+      this.errorMessage = 'Please select a valid material';
       this.successMessage = '';
       return;
     }
@@ -125,24 +94,60 @@ export class AddSawMaterialComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.sawMaterialService.addSawMaterial(this.material).subscribe({
+    // Build the material object from catalog data
+    const material: any = {
+      catalogMaterialId: this.selectedCatalogMaterialId,
+      materialType: this.selectedMaterialType,
+      length: this.length,
+      materialGrade: this.selectedCatalogMaterial.grade,
+      location: this.location,
+      addedBy: this.addedBy,
+      notes: this.notes,
+      status: 'available'
+    };
+
+    // Set dimensions based on material type
+    if (this.selectedMaterialType === 'i-beam' || this.selectedMaterialType === 'channel') {
+      material.dim1 = this.selectedCatalogMaterial.depth;
+      material.dim2 = this.selectedCatalogMaterial.weightPerFoot;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'angle') {
+      material.dim1 = this.selectedCatalogMaterial.leg1;
+      material.dim2 = this.selectedCatalogMaterial.leg2;
+      material.dim3 = this.selectedCatalogMaterial.thickness;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'tube') {
+      material.dim1 = this.selectedCatalogMaterial.width;
+      material.dim2 = this.selectedCatalogMaterial.height;
+      material.dim3 = this.selectedCatalogMaterial.wallThickness;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'square-stock') {
+      material.dim1 = this.selectedCatalogMaterial.width;
+      material.dim2 = this.selectedCatalogMaterial.height;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'round-stock') {
+      material.dim1 = this.selectedCatalogMaterial.diameter;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'dom') {
+      material.dim1 = this.selectedCatalogMaterial.outerDiameter;
+      material.dim2 = this.selectedCatalogMaterial.wallThickness;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'pipe') {
+      material.dim1 = this.selectedCatalogMaterial.nominalSize;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'flat-bar') {
+      material.dim1 = this.selectedCatalogMaterial.width;
+      material.dim2 = this.selectedCatalogMaterial.thickness;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    }
+
+    this.sawMaterialService.addSawMaterial(material).subscribe({
       next: (result) => {
-        this.successMessage = `✅ Saw material added successfully! ${result.formattedDimensions}`;
+        this.successMessage = `✅ Saw material added successfully! ${this.selectedCatalogMaterial.description} - ${this.length}" long`;
         this.loading = false;
 
         // Reset form
-        this.material = {
-          materialType: 'angle',
-          length: 0,
-          dim1: 0,
-          dim2: 0,
-          dim3: 0,
-          materialGrade: '',
-          location: '',
-          addedBy: '',
-          notes: '',
-          status: 'available'
-        };
+        this.clearForm();
 
         // Scroll to top to show success message
         window.scrollTo(0, 0);
@@ -156,18 +161,14 @@ export class AddSawMaterialComponent implements OnInit {
   }
 
   clearForm() {
-    this.material = {
-      materialType: 'angle',
-      length: 0,
-      dim1: 0,
-      dim2: 0,
-      dim3: 0,
-      materialGrade: '',
-      location: '',
-      addedBy: '',
-      notes: '',
-      status: 'available'
-    };
+    this.selectedMaterialType = '';
+    this.selectedCatalogMaterialId = '';
+    this.selectedCatalogMaterial = null;
+    this.catalogMaterials = [];
+    this.length = 0;
+    this.location = '';
+    this.addedBy = '';
+    this.notes = '';
     this.successMessage = '';
     this.errorMessage = '';
   }

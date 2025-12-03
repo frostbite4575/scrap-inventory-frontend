@@ -1,26 +1,26 @@
-<div class="app-container">
-  <nav class="navbar">
+<div class="app-container" [class.no-navbar]="!showNavbar">
+  <nav class="navbar" *ngIf="showNavbar">
     <div class="nav-brand">
-      <h1>🔧 {{ title }}</h1>
+      <a routerLink="/">🔧 {{ title }}</a>
     </div>
 
-    <div class="nav-section">
+    <div class="nav-section" *ngIf="currentSection === 'plasma'">
       <div class="section-label">Plate (Plasma Table)</div>
       <div class="nav-links">
-        <a routerLink="/dashboard" routerLinkActive="active">📊 Dashboard</a>
-        <a routerLink="/add" routerLinkActive="active">➕ Add Scrap</a>
-        <a routerLink="/list" routerLinkActive="active">📋 View All</a>
-        <a routerLink="/search" routerLinkActive="active">🔍 Search</a>
+        <a routerLink="/plasma/dashboard" routerLinkActive="active">📊 Dashboard</a>
+        <a routerLink="/plasma/add" routerLinkActive="active">➕ Add Scrap</a>
+        <a routerLink="/plasma/list" routerLinkActive="active">📋 View All</a>
+        <a routerLink="/plasma/search" routerLinkActive="active">🔍 Search</a>
       </div>
     </div>
 
-    <div class="nav-section">
+    <div class="nav-section" *ngIf="currentSection === 'saw'">
       <div class="section-label">Saw Materials</div>
       <div class="nav-links">
-        <a routerLink="/saw-dashboard" routerLinkActive="active">📊 Dashboard</a>
-        <a routerLink="/saw-add" routerLinkActive="active">➕ Add Material</a>
-        <a routerLink="/saw-list" routerLinkActive="active">📋 View All</a>
-        <a routerLink="/saw-search" routerLinkActive="active">🔍 Search</a>
+        <a routerLink="/saw/dashboard" routerLinkActive="active">📊 Dashboard</a>
+        <a routerLink="/saw/add" routerLinkActive="active">➕ Add Material</a>
+        <a routerLink="/saw/list" routerLinkActive="active">📋 View All</a>
+        <a routerLink="/saw/search" routerLinkActive="active">🔍 Search</a>
       </div>
     </div>
   </nav>
