@@ -17,13 +17,20 @@ export class AddScrapComponent implements OnInit {
   selectedCatalogMaterialId: string = '';
   length: number = 0;
   width: number = 0;
-  location: string = '';
+  selectedAreaId: string = '';
+  selectedSectionId: string = '';
+  selectedBin: string = '';
   addedBy: string = '';
   notes: string = '';
 
   // Catalog data
   catalogMaterials: any[] = [];
   selectedCatalogMaterial: any = null;
+
+  // Location data
+  areas: any[] = [];
+  sections: any[] = [];
+  bins: string[] = [];
 
   // UI state
   successMessage = '';
@@ -46,12 +53,58 @@ export class AddScrapComponent implements OnInit {
         this.errorMessage = 'Failed to load material catalog';
       }
     });
+
+    // Load areas for location selection
+    this.scrapService.getAreas().subscribe({
+      next: (response) => {
+        this.areas = response.areas || [];
+      },
+      error: (err) => {
+        console.error('Error loading areas:', err);
+      }
+    });
   }
 
   // When a specific catalog material is selected, store its details
   onCatalogMaterialChange() {
     const selected = this.catalogMaterials.find(m => m.id === this.selectedCatalogMaterialId);
     this.selectedCatalogMaterial = selected || null;
+  }
+
+  // When area is selected, load sections
+  onAreaChange() {
+    this.sections = [];
+    this.bins = [];
+    this.selectedSectionId = '';
+    this.selectedBin = '';
+
+    if (!this.selectedAreaId) return;
+
+    this.scrapService.getSections(this.selectedAreaId).subscribe({
+      next: (response) => {
+        this.sections = response.sections || [];
+      },
+      error: (err) => {
+        console.error('Error loading sections:', err);
+      }
+    });
+  }
+
+  // When section is selected, load bins
+  onSectionChange() {
+    this.bins = [];
+    this.selectedBin = '';
+
+    if (!this.selectedAreaId || !this.selectedSectionId) return;
+
+    this.scrapService.getBins(this.selectedAreaId, this.selectedSectionId).subscribe({
+      next: (response) => {
+        this.bins = response.bins || [];
+      },
+      error: (err) => {
+        console.error('Error loading bins:', err);
+      }
+    });
   }
 
   onSubmit() {
@@ -72,6 +125,14 @@ export class AddScrapComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    // Build location string
+    let locationString = '';
+    if (this.selectedAreaId && this.selectedSectionId && this.selectedBin) {
+      const area = this.areas.find(a => a.id === this.selectedAreaId);
+      const section = this.sections.find(s => s.id === this.selectedSectionId);
+      locationString = `${area?.name} > ${section?.name} > ${this.selectedBin}`;
+    }
+
     // Build the scrap piece object from catalog data
     const scrapPiece: any = {
       catalogMaterialId: this.selectedCatalogMaterialId,
@@ -79,7 +140,7 @@ export class AddScrapComponent implements OnInit {
       width: this.width,
       thickness: this.selectedCatalogMaterial.thickness,
       materialGrade: this.selectedCatalogMaterial.grade,
-      location: this.location,
+      location: locationString,
       addedBy: this.addedBy,
       notes: this.notes,
       status: 'available'
@@ -109,7 +170,11 @@ export class AddScrapComponent implements OnInit {
     this.selectedCatalogMaterial = null;
     this.length = 0;
     this.width = 0;
-    this.location = '';
+    this.selectedAreaId = '';
+    this.selectedSectionId = '';
+    this.selectedBin = '';
+    this.sections = [];
+    this.bins = [];
     this.addedBy = '';
     this.notes = '';
     this.successMessage = '';

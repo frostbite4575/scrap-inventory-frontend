@@ -91,4 +91,17 @@ export class SawMaterialService {
   getCatalogMaterial(materialId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/saw-material/catalog/${materialId}`);
   }
+
+  // Location methods
+  getAreas(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/saw-material/locations/areas`);
+  }
+
+  getSections(areaId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/saw-material/locations/sections/${areaId}`);
+  }
+
+  getBins(areaId: string, sectionId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/saw-material/locations/bins/${areaId}/${sectionId}`);
+  }
 }

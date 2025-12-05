@@ -75,18 +75,55 @@
           <small>Enter the length of your scrap piece</small>
         </div>
 
+      </div>
+
+      <h4>Location</h4>
+      <div class="form-row">
         <div class="form-group">
-          <label for="location">Location</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            [(ngModel)]="location"
-            placeholder="e.g., Rack 3, Bay A">
-          <small>Where is this piece stored?</small>
+          <label for="area">Area</label>
+          <select
+            id="area"
+            name="area"
+            [(ngModel)]="selectedAreaId"
+            (ngModelChange)="onAreaChange()">
+            <option value="">Select Area</option>
+            <option *ngFor="let area of areas" [value]="area.id">
+              {{ area.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="section">Section</label>
+          <select
+            id="section"
+            name="section"
+            [(ngModel)]="selectedSectionId"
+            (ngModelChange)="onSectionChange()"
+            [disabled]="!selectedAreaId">
+            <option value="">Select Section</option>
+            <option *ngFor="let section of sections" [value]="section.id">
+              {{ section.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bin">Bin</label>
+          <select
+            id="bin"
+            name="bin"
+            [(ngModel)]="selectedBin"
+            [disabled]="!selectedSectionId">
+            <option value="">Select Bin</option>
+            <option *ngFor="let bin of bins" [value]="bin">
+              {{ bin }}
+            </option>
+          </select>
         </div>
       </div>
 
+      <h4>Additional Details</h4>
       <div class="form-row">
         <div class="form-group">
           <label for="addedBy">Your Name *</label>

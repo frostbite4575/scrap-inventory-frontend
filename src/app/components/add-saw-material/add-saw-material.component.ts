@@ -17,7 +17,9 @@ export class AddSawMaterialComponent implements OnInit {
   selectedMaterialType: string = '';
   selectedCatalogMaterialId: string = '';
   length: number = 0;
-  location: string = '';
+  selectedAreaId: string = '';
+  selectedSectionId: string = '';
+  selectedBin: string = '';
   addedBy: string = '';
   notes: string = '';
 
@@ -25,6 +27,11 @@ export class AddSawMaterialComponent implements OnInit {
   materialTypes: string[] = [];
   catalogMaterials: any[] = [];
   selectedCatalogMaterial: any = null;
+
+  // Location data
+  areas: any[] = [];
+  sections: any[] = [];
+  bins: string[] = [];
 
   // UI state
   successMessage = '';
@@ -45,6 +52,16 @@ export class AddSawMaterialComponent implements OnInit {
       error: (err) => {
         console.error('Error loading material types:', err);
         this.errorMessage = 'Failed to load material types';
+      }
+    });
+
+    // Load areas for location selection
+    this.sawMaterialService.getAreas().subscribe({
+      next: (response) => {
+        this.areas = response.areas || [];
+      },
+      error: (err) => {
+        console.error('Error loading areas:', err);
       }
     });
   }
@@ -76,6 +93,42 @@ export class AddSawMaterialComponent implements OnInit {
     this.selectedCatalogMaterial = selected || null;
   }
 
+  // When area is selected, load sections
+  onAreaChange() {
+    this.sections = [];
+    this.bins = [];
+    this.selectedSectionId = '';
+    this.selectedBin = '';
+
+    if (!this.selectedAreaId) return;
+
+    this.sawMaterialService.getSections(this.selectedAreaId).subscribe({
+      next: (response) => {
+        this.sections = response.sections || [];
+      },
+      error: (err) => {
+        console.error('Error loading sections:', err);
+      }
+    });
+  }
+
+  // When section is selected, load bins
+  onSectionChange() {
+    this.bins = [];
+    this.selectedBin = '';
+
+    if (!this.selectedAreaId || !this.selectedSectionId) return;
+
+    this.sawMaterialService.getBins(this.selectedAreaId, this.selectedSectionId).subscribe({
+      next: (response) => {
+        this.bins = response.bins || [];
+      },
+      error: (err) => {
+        console.error('Error loading bins:', err);
+      }
+    });
+  }
+
   onSubmit() {
     // Validate required fields
     if (!this.selectedCatalogMaterialId || !this.length || !this.addedBy) {
@@ -94,13 +147,21 @@ export class AddSawMaterialComponent implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
+    // Build location string
+    let locationString = '';
+    if (this.selectedAreaId && this.selectedSectionId && this.selectedBin) {
+      const area = this.areas.find(a => a.id === this.selectedAreaId);
+      const section = this.sections.find(s => s.id === this.selectedSectionId);
+      locationString = `${area?.name} > ${section?.name} > ${this.selectedBin}`;
+    }
+
     // Build the material object from catalog data
     const material: any = {
       catalogMaterialId: this.selectedCatalogMaterialId,
       materialType: this.selectedMaterialType,
       length: this.length,
       materialGrade: this.selectedCatalogMaterial.grade,
-      location: this.location,
+      location: locationString,
       addedBy: this.addedBy,
       notes: this.notes,
       status: 'available'
@@ -176,7 +237,11 @@ export class AddSawMaterialComponent implements OnInit {
     this.selectedCatalogMaterial = null;
     this.catalogMaterials = [];
     this.length = 0;
-    this.location = '';
+    this.selectedAreaId = '';
+    this.selectedSectionId = '';
+    this.selectedBin = '';
+    this.sections = [];
+    this.bins = [];
     this.addedBy = '';
     this.notes = '';
     this.successMessage = '';
