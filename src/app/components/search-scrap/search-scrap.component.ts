@@ -18,7 +18,8 @@ export class SearchScrapComponent {
     thickness: null as number | null,
     minLength: null as number | null,
     minWidth: null as number | null,
-    location: ''
+    location: '',
+    reservationId: ''
   };
 
   searchResults: ScrapPiece[] = [];
@@ -52,6 +53,9 @@ export class SearchScrapComponent {
     if (this.filters.location) {
       searchParams.location = this.filters.location;
     }
+    if (this.filters.reservationId) {
+      searchParams.reservationId = this.filters.reservationId;
+    }
 
     this.scrapService.getScrap(searchParams).subscribe({
       next: (response) => {
@@ -71,7 +75,8 @@ export class SearchScrapComponent {
       thickness: null,
       minLength: null,
       minWidth: null,
-      location: ''
+      location: '',
+      reservationId: ''
     };
     this.searchResults = [];
     this.searched = false;
