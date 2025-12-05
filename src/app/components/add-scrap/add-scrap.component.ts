@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,19 +12,20 @@ import { ScrapPiece } from '../../models/scrap.model';
   templateUrl: './add-scrap.component.html',
   styleUrl: './add-scrap.component.css'
 })
-export class AddScrapComponent {
-  scrap: Partial<ScrapPiece> = {
-    length: 0,
-    width: 0,
-    thickness: 0,
-    materialGrade: '',
-    location: '',
-    addedBy: '',
-    notes: '',
-    status: 'available'
-  };
+export class AddScrapComponent implements OnInit {
+  // Form data
+  selectedCatalogMaterialId: string = '';
+  length: number = 0;
+  width: number = 0;
+  location: string = '';
+  addedBy: string = '';
+  notes: string = '';
 
-  materialGrades: string[] = [];
+  // Catalog data
+  catalogMaterials: any[] = [];
+  selectedCatalogMaterial: any = null;
+
+  // UI state
   successMessage = '';
   errorMessage = '';
   loading = false;
@@ -32,15 +33,37 @@ export class AddScrapComponent {
   constructor(
     private scrapService: ScrapService,
     private router: Router
-  ) {
-    this.materialGrades = this.scrapService.getMaterialGrades();
+  ) {}
+
+  ngOnInit() {
+    // Load plate materials from catalog
+    this.scrapService.getCatalog('plate').subscribe({
+      next: (response) => {
+        this.catalogMaterials = response.materials || [];
+      },
+      error: (err) => {
+        console.error('Error loading catalog materials:', err);
+        this.errorMessage = 'Failed to load material catalog';
+      }
+    });
+  }
+
+  // When a specific catalog material is selected, store its details
+  onCatalogMaterialChange() {
+    const selected = this.catalogMaterials.find(m => m.id === this.selectedCatalogMaterialId);
+    this.selectedCatalogMaterial = selected || null;
   }
 
   onSubmit() {
     // Validate required fields
-    if (!this.scrap.length || !this.scrap.width || !this.scrap.thickness || 
-        !this.scrap.materialGrade || !this.scrap.addedBy) {
+    if (!this.selectedCatalogMaterialId || !this.length || !this.width || !this.addedBy) {
       this.errorMessage = 'Please fill in all required fields';
+      this.successMessage = '';
+      return;
+    }
+
+    if (!this.selectedCatalogMaterial) {
+      this.errorMessage = 'Please select a valid material';
       this.successMessage = '';
       return;
     }
@@ -49,22 +72,26 @@ export class AddScrapComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
-    this.scrapService.addScrap(this.scrap).subscribe({
+    // Build the scrap piece object from catalog data
+    const scrapPiece: any = {
+      catalogMaterialId: this.selectedCatalogMaterialId,
+      length: this.length,
+      width: this.width,
+      thickness: this.selectedCatalogMaterial.thickness,
+      materialGrade: this.selectedCatalogMaterial.grade,
+      location: this.location,
+      addedBy: this.addedBy,
+      notes: this.notes,
+      status: 'available'
+    };
+
+    this.scrapService.addScrap(scrapPiece).subscribe({
       next: (result) => {
-        this.successMessage = `✅ Scrap piece added successfully! Area: ${result.area?.toFixed(2)} sq in`;
+        this.successMessage = `✅ Scrap piece added successfully! ${this.selectedCatalogMaterial.description} - ${this.length}" x ${this.width}"`;
         this.loading = false;
-        
+
         // Reset form
-        this.scrap = {
-          length: 0,
-          width: 0,
-          thickness: 0,
-          materialGrade: '',
-          location: '',
-          addedBy: '',
-          notes: '',
-          status: 'available'
-        };
+        this.clearForm();
 
         // Scroll to top to show success message
         window.scrollTo(0, 0);
@@ -78,16 +105,13 @@ export class AddScrapComponent {
   }
 
   clearForm() {
-    this.scrap = {
-      length: 0,
-      width: 0,
-      thickness: 0,
-      materialGrade: '',
-      location: '',
-      addedBy: '',
-      notes: '',
-      status: 'available'
-    };
+    this.selectedCatalogMaterialId = '';
+    this.selectedCatalogMaterial = null;
+    this.length = 0;
+    this.width = 0;
+    this.location = '';
+    this.addedBy = '';
+    this.notes = '';
     this.successMessage = '';
     this.errorMessage = '';
   }

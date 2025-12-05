@@ -70,4 +70,15 @@ export class ScrapService {
   getMaterialGrades(): string[] {
     return ['A36', 'A572-50', '304SS', '316SS', '5052-H32', '6061-T6'];
   }
+
+  // Get catalog materials
+  getCatalog(type?: string): Observable<any> {
+    const params = type ? new HttpParams().set('type', type) : new HttpParams();
+    return this.http.get(`${this.apiUrl}/scrap/catalog`, { params });
+  }
+
+  // Get specific catalog material by ID
+  getCatalogMaterial(materialId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/scrap/catalog/${materialId}`);
+  }
 }
