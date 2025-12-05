@@ -107,9 +107,19 @@ export class AddSawMaterialComponent implements OnInit {
     };
 
     // Set dimensions based on material type
-    if (this.selectedMaterialType === 'i-beam' || this.selectedMaterialType === 'channel') {
+    if (this.selectedMaterialType === 'i-beam') {
       material.dim1 = this.selectedCatalogMaterial.depth;
       material.dim2 = this.selectedCatalogMaterial.weightPerFoot;
+      material.dimensionDisplay = this.selectedCatalogMaterial.size;
+    } else if (this.selectedMaterialType === 'channel') {
+      material.dim1 = this.selectedCatalogMaterial.depth;
+      // Standard channels use weightPerFoot, dimensional channels use flange/web
+      if (this.selectedCatalogMaterial.weightPerFoot) {
+        material.dim2 = this.selectedCatalogMaterial.weightPerFoot;
+      } else if (this.selectedCatalogMaterial.flange) {
+        material.dim2 = this.selectedCatalogMaterial.flange;
+        material.dim3 = this.selectedCatalogMaterial.web;
+      }
       material.dimensionDisplay = this.selectedCatalogMaterial.size;
     } else if (this.selectedMaterialType === 'angle') {
       material.dim1 = this.selectedCatalogMaterial.leg1;
