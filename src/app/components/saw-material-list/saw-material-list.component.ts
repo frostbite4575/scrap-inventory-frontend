@@ -96,7 +96,8 @@ export class SawMaterialListComponent implements OnInit {
       'dom': 'D.O.M.',
       'pipe': 'Pipe',
       'i-beam': 'I-Beam',
-      'channel': 'Channel'
+      'channel': 'Channel',
+      'flat-bar': 'Flat Bar'
     };
     return typeMap[type] || type;
   }
