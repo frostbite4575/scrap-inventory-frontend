@@ -10,129 +10,151 @@
   </div>
 
   <form (ngSubmit)="onSubmit()" #materialForm="ngForm">
-    <!-- Material Type -->
-    <div class="form-row">
+    <!-- Step 1: Select Material Type -->
+    <div class="form-section">
+      <h3>Step 1: Select Material Type</h3>
       <div class="form-group">
         <label for="materialType">Material Type *</label>
         <select
           id="materialType"
           name="materialType"
-          [(ngModel)]="material.materialType"
+          [(ngModel)]="selectedMaterialType"
           (change)="onMaterialTypeChange()"
           required>
-          <option *ngFor="let type of materialTypes" [value]="type.value">
-            {{ type.label }}
+          <option value="">-- Select Material Type --</option>
+          <option *ngFor="let type of materialTypes" [value]="type">
+            {{ type | uppercase }}
           </option>
         </select>
       </div>
-
-      <div class="form-group">
-        <label for="length">Length (inches) *</label>
-        <input
-          type="number"
-          id="length"
-          name="length"
-          [(ngModel)]="material.length"
-          step="0.01"
-          required
-          min="0">
-      </div>
     </div>
 
-    <!-- Dimensions (dynamic based on type) -->
-    <div class="form-row">
+    <!-- Step 2: Select Specific Material from Catalog -->
+    <div class="form-section" *ngIf="selectedMaterialType && catalogMaterials.length > 0">
+      <h3>Step 2: Select Material Specification</h3>
       <div class="form-group">
-        <label for="dim1">{{ dimensionLabels[0] || 'Dimension 1' }} *</label>
-        <input
-          type="number"
-          id="dim1"
-          name="dim1"
-          [(ngModel)]="material.dim1"
-          step="0.001"
-          required
-          min="0">
-      </div>
-
-      <div class="form-group" *ngIf="needsDim2">
-        <label for="dim2">{{ dimensionLabels[1] || 'Dimension 2' }} *</label>
-        <input
-          type="number"
-          id="dim2"
-          name="dim2"
-          [(ngModel)]="material.dim2"
-          step="0.001"
-          required
-          min="0">
-      </div>
-
-      <div class="form-group" *ngIf="needsDim3">
-        <label for="dim3">{{ dimensionLabels[2] || 'Dimension 3' }} *</label>
-        <input
-          type="number"
-          id="dim3"
-          name="dim3"
-          [(ngModel)]="material.dim3"
-          step="0.001"
-          required
-          min="0">
-      </div>
-    </div>
-
-    <!-- Material Grade and Location -->
-    <div class="form-row">
-      <div class="form-group">
-        <label for="materialGrade">Material Grade *</label>
+        <label for="catalogMaterial">Material Specification *</label>
         <select
-          id="materialGrade"
-          name="materialGrade"
-          [(ngModel)]="material.materialGrade"
+          id="catalogMaterial"
+          name="catalogMaterial"
+          [(ngModel)]="selectedCatalogMaterialId"
+          (change)="onCatalogMaterialChange()"
           required>
-          <option value="">Select Grade</option>
-          <option *ngFor="let grade of materialGrades" [value]="grade">
-            {{ grade }}
+          <option value="">-- Select Material --</option>
+          <option *ngFor="let mat of catalogMaterials" [value]="mat.id">
+            {{ mat.description }}
           </option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input
-          type="text"
-          id="location"
-          name="location"
-          [(ngModel)]="material.location"
-          placeholder="e.g., Rack 3, Bay A">
-      </div>
-
-      <div class="form-group">
-        <label for="addedBy">Your Name *</label>
-        <input
-          type="text"
-          id="addedBy"
-          name="addedBy"
-          [(ngModel)]="material.addedBy"
-          required>
+      <!-- Show selected material details -->
+      <div *ngIf="selectedCatalogMaterial" class="material-info">
+        <h4>Selected Material Details:</h4>
+        <p><strong>Type:</strong> {{ selectedMaterialType | uppercase }}</p>
+        <p><strong>Size:</strong> {{ selectedCatalogMaterial.size }}</p>
+        <p><strong>Grade:</strong> {{ selectedCatalogMaterial.grade }}</p>
       </div>
     </div>
 
-    <!-- Notes -->
-    <div class="form-group">
-      <label for="notes">Notes</label>
-      <textarea
-        id="notes"
-        name="notes"
-        [(ngModel)]="material.notes"
-        rows="3"
-        placeholder="Any notes about this material..."></textarea>
+    <!-- Step 3: Enter Scrap Piece Details -->
+    <div class="form-section" *ngIf="selectedCatalogMaterial">
+      <h3>Step 3: Enter Scrap Piece Details</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="length">Length (inches) *</label>
+          <input
+            type="number"
+            id="length"
+            name="length"
+            [(ngModel)]="length"
+            step="0.125"
+            required
+            min="0"
+            placeholder="e.g., 24.5">
+          <small>Enter the length of your scrap piece</small>
+        </div>
+
+      </div>
+
+      <h4>Location</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="area">Area</label>
+          <select
+            id="area"
+            name="area"
+            [(ngModel)]="selectedAreaId"
+            (ngModelChange)="onAreaChange()">
+            <option value="">Select Area</option>
+            <option *ngFor="let area of areas" [value]="area.id">
+              {{ area.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="section">Section</label>
+          <select
+            id="section"
+            name="section"
+            [(ngModel)]="selectedSectionId"
+            (ngModelChange)="onSectionChange()"
+            [disabled]="!selectedAreaId">
+            <option value="">Select Section</option>
+            <option *ngFor="let section of sections" [value]="section.id">
+              {{ section.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="bin">Bin</label>
+          <select
+            id="bin"
+            name="bin"
+            [(ngModel)]="selectedBin"
+            [disabled]="!selectedSectionId">
+            <option value="">Select Bin</option>
+            <option *ngFor="let bin of bins" [value]="bin">
+              {{ bin }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <h4>Additional Details</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="addedBy">Your Name *</label>
+          <input
+            type="text"
+            id="addedBy"
+            name="addedBy"
+            [(ngModel)]="addedBy"
+            required
+            placeholder="e.g., John Smith">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea
+          id="notes"
+          name="notes"
+          [(ngModel)]="notes"
+          rows="3"
+          placeholder="Any additional notes about this piece (rust, bends, etc.)..."></textarea>
+      </div>
     </div>
 
     <!-- Buttons -->
-    <div class="form-actions">
+    <div class="form-actions" *ngIf="selectedCatalogMaterial">
       <button
         type="submit"
         class="btn btn-primary"
         [disabled]="loading || !materialForm.form.valid">
-        <span *ngIf="!loading">Add Saw Material</span>
+        <span *ngIf="!loading">➕ Add Scrap Piece</span>
         <span *ngIf="loading">⏳ Adding...</span>
       </button>
       <button
@@ -140,8 +162,13 @@
         class="btn btn-secondary"
         (click)="clearForm()"
         [disabled]="loading">
-        Clear Form
+        🔄 Clear Form
       </button>
     </div>
   </form>
+
+  <!-- Help text -->
+  <div class="help-text" *ngIf="!selectedMaterialType">
+    <p>💡 <strong>Tip:</strong> Start by selecting the type of material (I-Beam, Angle, Tube, etc.)</p>
+  </div>
 </div>

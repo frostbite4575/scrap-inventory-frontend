@@ -1,0 +1,65 @@
+<div class="home-container">
+  <div class="welcome-section">
+    <h1>Welcome to Scrap Inventory System</h1>
+    <p class="subtitle">Manage your plasma table plates and saw materials efficiently</p>
+  </div>
+
+  <div *ngIf="!showLogin" class="selection-section">
+    <h2>Select a Section</h2>
+    <div class="section-cards">
+      <div class="section-card plasma-card" (click)="navigateTo('plasma')">
+        <div class="card-icon">⚡</div>
+        <h3>Plasma Table</h3>
+        <p>Manage plate materials for plasma cutting</p>
+        <button class="btn-select">Enter Section</button>
+      </div>
+
+      <div class="section-card saw-card" (click)="navigateTo('saw')">
+        <div class="card-icon">🔨</div>
+        <h3>Saw Materials</h3>
+        <p>Manage structural materials for saw cutting</p>
+        <button class="btn-select">Enter Section</button>
+      </div>
+    </div>
+
+    <div class="login-prompt">
+      <p>Need to login? <a (click)="showLogin = true" class="login-link">Click here</a></p>
+      <p class="info-note">Authentication coming soon</p>
+    </div>
+  </div>
+
+  <div *ngIf="showLogin" class="login-card">
+    <h2>Login</h2>
+    <form (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          [(ngModel)]="username"
+          placeholder="Enter username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Enter password"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-login">Login</button>
+    </form>
+
+    <div class="back-link">
+      <a (click)="showLogin = false">← Back to section selection</a>
+    </div>
+  </div>
+</div>

@@ -7,7 +7,7 @@ import { ScrapPiece, DashboardStats } from '../models/scrap.model';
   providedIn: 'root'
 })
 export class ScrapService {
-  private apiUrl = 'https://scrap-inventory-backend.onrender.com/api';
+  private apiUrl = 'http://localhost:3000/api';
   constructor(private http: HttpClient) { }
 
   // Get all scrap pieces with optional filters
@@ -69,5 +69,29 @@ export class ScrapService {
   // Get material grades
   getMaterialGrades(): string[] {
     return ['A36', 'A572-50', '304SS', '316SS', '5052-H32', '6061-T6'];
+  }
+
+  // Get catalog materials
+  getCatalog(type?: string): Observable<any> {
+    const params = type ? new HttpParams().set('type', type) : new HttpParams();
+    return this.http.get(`${this.apiUrl}/scrap/catalog`, { params });
+  }
+
+  // Get specific catalog material by ID
+  getCatalogMaterial(materialId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/scrap/catalog/${materialId}`);
+  }
+
+  // Location methods
+  getAreas(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/scrap/locations/areas`);
+  }
+
+  getSections(areaId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/scrap/locations/sections/${areaId}`);
+  }
+
+  getBins(areaId: string, sectionId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/scrap/locations/bins/${areaId}/${sectionId}`);
   }
 }

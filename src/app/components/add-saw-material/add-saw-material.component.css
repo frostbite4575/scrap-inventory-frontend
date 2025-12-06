@@ -113,6 +113,59 @@
   background: #d0d0d0;
 }
 
+.form-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+.form-section h3 {
+  margin: 0 0 1rem 0;
+  color: #667eea;
+  font-size: 1.2rem;
+}
+
+.material-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: white;
+  border-left: 4px solid #667eea;
+  border-radius: 5px;
+}
+
+.material-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.material-info p {
+  margin: 0.25rem 0;
+  color: #555;
+}
+
+.form-group small {
+  margin-top: 0.25rem;
+  color: #777;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.help-text {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: 8px;
+  color: #856404;
+}
+
+.help-text p {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .form-row {
     grid-template-columns: 1fr;

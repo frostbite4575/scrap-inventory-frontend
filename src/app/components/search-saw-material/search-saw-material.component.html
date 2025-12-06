@@ -44,6 +44,11 @@
         <label for="maxLength">Max Length (in)</label>
         <input type="number" id="maxLength" [(ngModel)]="filters.maxLength" step="0.01">
       </div>
+
+      <div class="form-group">
+        <label for="reservationId">Reservation ID</label>
+        <input type="text" id="reservationId" [(ngModel)]="filters.reservationId" placeholder="e.g., RES-20250105-A3F9">
+      </div>
     </div>
 
     <div class="form-actions">

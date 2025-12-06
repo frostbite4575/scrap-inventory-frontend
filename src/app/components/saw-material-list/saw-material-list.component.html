@@ -1,6 +1,6 @@
 <div class="saw-material-list">
   <div class="list-header">
-    <h2>All Available Saw Materials</h2>
+    <h2>Saw Materials Inventory</h2>
     <button class="btn btn-secondary" (click)="loadMaterials()">
       🔄 Refresh
     </button>
@@ -61,10 +61,14 @@
 
         <!-- Reserved Info -->
         <div *ngIf="material.status === 'reserved'" class="reserved-info">
-          Reserved for: {{ material.reservedFor || 'Unknown job' }}
+          <div><strong>Reserved For:</strong> {{ material.reservedFor || 'Unknown job' }}</div>
+          <div><strong>Reservation ID:</strong> {{ material.reservationId || 'N/A' }}</div>
+          <div><strong>Reserved Date:</strong> {{ formatDate(material.reservedDate) }}</div>
         </div>
 
         <!-- Actions -->
+
+         
         <div class="material-actions">
           <button
             *ngIf="material.status === 'available'"
@@ -85,6 +89,13 @@
             class="btn btn-secondary btn-sm"
             (click)="unreserveMaterial(material)">
             🔓 Unreserve
+          </button>
+
+          <button
+            *ngIf="material.status === 'reserved'"
+            class="btn btn-danger btn-sm"
+            (click)="markAsUsed(material)">
+            ✓ Mark as Used
           </button>
         </div>
       </div>

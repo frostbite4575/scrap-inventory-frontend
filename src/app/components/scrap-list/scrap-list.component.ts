@@ -25,10 +25,10 @@ export class ScrapListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // Only show available pieces by default
-    this.scrapService.getScrap({ status: 'available' }).subscribe({
+    // Show both available and reserved pieces (exclude only 'used')
+    this.scrapService.getScrap({}).subscribe({
       next: (response) => {
-        this.scrapPieces = response.data;
+        this.scrapPieces = response.data.filter(p => p.status !== 'used');
         this.loading = false;
       },
       error: (err) => {

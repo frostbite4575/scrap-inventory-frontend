@@ -15,9 +15,10 @@ export class SearchSawMaterialComponent implements OnInit {
   filters = {
     materialType: '',
     materialGrade: '',
-    status: 'available',
+    status: '',
     minLength: null as number | null,
-    maxLength: null as number | null
+    maxLength: null as number | null,
+    reservationId: ''
   };
 
   materials: SawMaterial[] = [];
@@ -54,6 +55,7 @@ export class SearchSawMaterialComponent implements OnInit {
     if (this.filters.status) filters.status = this.filters.status;
     if (this.filters.minLength) filters.minLength = this.filters.minLength;
     if (this.filters.maxLength) filters.maxLength = this.filters.maxLength;
+    if (this.filters.reservationId) filters.reservationId = this.filters.reservationId;
 
     this.sawMaterialService.getSawMaterials(filters).subscribe({
       next: (response) => {
@@ -72,9 +74,10 @@ export class SearchSawMaterialComponent implements OnInit {
     this.filters = {
       materialType: '',
       materialGrade: '',
-      status: 'available',
+      status: '',
       minLength: null,
-      maxLength: null
+      maxLength: null,
+      reservationId: ''
     };
     this.materials = [];
     this.searched = false;
@@ -94,7 +97,8 @@ export class SearchSawMaterialComponent implements OnInit {
       'dom': 'D.O.M.',
       'pipe': 'Pipe',
       'i-beam': 'I-Beam',
-      'channel': 'Channel'
+      'channel': 'Channel',
+      'flat-bar': 'Flat Bar'
     };
     return typeMap[type] || type;
   }

@@ -1,4 +1,4 @@
-export type MaterialType = 'angle' | 'tube' | 'square-stock' | 'round-stock' | 'dom' | 'pipe' | 'i-beam' | 'channel';
+export type MaterialType = 'angle' | 'tube' | 'square-stock' | 'round-stock' | 'dom' | 'pipe' | 'i-beam' | 'channel' | 'flat-bar';
 
 export interface SawMaterial {
   _id?: string;
@@ -16,6 +16,7 @@ export interface SawMaterial {
   notes?: string;
   status: 'available' | 'reserved' | 'used';
   reservedFor?: string;
+  reservationId?: string;
   reservedDate?: Date;
   usedDate?: Date;
 }

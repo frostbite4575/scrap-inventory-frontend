@@ -18,7 +18,8 @@ export class SearchScrapComponent {
     thickness: null as number | null,
     minLength: null as number | null,
     minWidth: null as number | null,
-    location: ''
+    location: '',
+    reservationId: ''
   };
 
   searchResults: ScrapPiece[] = [];
@@ -35,8 +36,8 @@ export class SearchScrapComponent {
     this.searched = true;
 
     // Build filter object (only include non-empty values)
-    const searchParams: any = { status: 'available' };
-    
+    const searchParams: any = {};
+
     if (this.filters.materialGrade) {
       searchParams.materialGrade = this.filters.materialGrade;
     }
@@ -51,6 +52,9 @@ export class SearchScrapComponent {
     }
     if (this.filters.location) {
       searchParams.location = this.filters.location;
+    }
+    if (this.filters.reservationId) {
+      searchParams.reservationId = this.filters.reservationId;
     }
 
     this.scrapService.getScrap(searchParams).subscribe({
@@ -71,7 +75,8 @@ export class SearchScrapComponent {
       thickness: null,
       minLength: null,
       minWidth: null,
-      location: ''
+      location: '',
+      reservationId: ''
     };
     this.searchResults = [];
     this.searched = false;
@@ -88,6 +93,20 @@ export class SearchScrapComponent {
       },
       error: (err) => {
         alert(`❌ Error: ${err.error?.message || 'Failed to reserve piece'}`);
+      }
+    });
+  }
+
+  unreservePiece(piece: ScrapPiece) {
+    if (!confirm('Are you sure you want to unreserve this piece?') || !piece._id) return;
+
+    this.scrapService.unreserveScrap(piece._id).subscribe({
+      next: () => {
+        alert('✅ Piece unreserved successfully!');
+        this.onSearch(); // Refresh results
+      },
+      error: (err) => {
+        alert(`❌ Error: ${err.error?.message || 'Failed to unreserve piece'}`);
       }
     });
   }
