@@ -15,7 +15,7 @@ export class SearchSawMaterialComponent implements OnInit {
   filters = {
     materialType: '',
     materialGrade: '',
-    status: 'available',
+    status: '',
     minLength: null as number | null,
     maxLength: null as number | null,
     reservationId: ''
@@ -74,7 +74,7 @@ export class SearchSawMaterialComponent implements OnInit {
     this.filters = {
       materialType: '',
       materialGrade: '',
-      status: 'available',
+      status: '',
       minLength: null,
       maxLength: null,
       reservationId: ''

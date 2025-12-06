@@ -36,8 +36,8 @@ export class SearchScrapComponent {
     this.searched = true;
 
     // Build filter object (only include non-empty values)
-    const searchParams: any = { status: 'available' };
-    
+    const searchParams: any = {};
+
     if (this.filters.materialGrade) {
       searchParams.materialGrade = this.filters.materialGrade;
     }
