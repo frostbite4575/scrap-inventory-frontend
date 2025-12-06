@@ -10,6 +10,7 @@ export interface ScrapPiece {
   notes?: string;
   status: 'available' | 'reserved' | 'used';
   reservedFor?: string;
+  reservationId?: string;
   reservedDate?: Date;
   usedDate?: Date;
   area?: number;
