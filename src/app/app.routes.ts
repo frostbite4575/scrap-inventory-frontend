@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
+import { LoginComponent } from './components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AddScrapComponent } from './components/add-scrap/add-scrap.component';
@@ -10,17 +12,21 @@ import { SawMaterialListComponent } from './components/saw-material-list/saw-mat
 import { SearchSawMaterialComponent } from './components/search-saw-material/search-saw-material.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: 'login', component: LoginComponent },
+  { path: '', component: HomeComponent, canActivate: [authGuard] },
 
   // Plate/Plasma Table Routes
-  { path: 'plasma/dashboard', component: DashboardComponent },
-  { path: 'plasma/add', component: AddScrapComponent },
-  { path: 'plasma/list', component: ScrapListComponent },
-  { path: 'plasma/search', component: SearchScrapComponent },
+  { path: 'plasma/dashboard', component: DashboardComponent, canActivate: [authGuard] },
+  { path: 'plasma/add', component: AddScrapComponent, canActivate: [authGuard] },
+  { path: 'plasma/list', component: ScrapListComponent, canActivate: [authGuard] },
+  { path: 'plasma/search', component: SearchScrapComponent, canActivate: [authGuard] },
 
   // Saw Materials Routes
-  { path: 'saw/dashboard', component: SawDashboardComponent },
-  { path: 'saw/add', component: AddSawMaterialComponent },
-  { path: 'saw/list', component: SawMaterialListComponent },
-  { path: 'saw/search', component: SearchSawMaterialComponent }
+  { path: 'saw/dashboard', component: SawDashboardComponent, canActivate: [authGuard] },
+  { path: 'saw/add', component: AddSawMaterialComponent, canActivate: [authGuard] },
+  { path: 'saw/list', component: SawMaterialListComponent, canActivate: [authGuard] },
+  { path: 'saw/search', component: SearchSawMaterialComponent, canActivate: [authGuard] },
+
+  // Redirect unknown routes to home
+  { path: '**', redirectTo: '' }
 ];

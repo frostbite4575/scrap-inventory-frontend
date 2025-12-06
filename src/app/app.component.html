@@ -23,6 +23,14 @@
         <a routerLink="/saw/search" routerLinkActive="active">🔍 Search</a>
       </div>
     </div>
+
+    <div class="nav-user" *ngIf="currentUser">
+      <span class="user-info">
+        <span class="user-name">{{ currentUser.fullName }}</span>
+        <span class="user-role">({{ currentUser.role }})</span>
+      </span>
+      <button class="logout-btn" (click)="logout()">Logout</button>
+    </div>
   </nav>
 
   <main class="main-content">
