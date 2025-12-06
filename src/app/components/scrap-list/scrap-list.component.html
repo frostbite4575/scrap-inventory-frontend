@@ -1,6 +1,6 @@
 <div class="scrap-list">
   <div class="list-header">
-    <h2>All Available Scrap</h2>
+    <h2>Scrap Inventory</h2>
     <button class="btn btn-secondary" (click)="loadScrap()">
       🔄 Refresh
     </button>
@@ -61,30 +61,39 @@
 
         <!-- Reserved Info -->
         <div *ngIf="piece.status === 'reserved'" class="reserved-info">
-          Reserved for: {{ piece.reservedFor || 'Unknown job' }}
+          <div><strong>Reserved For:</strong> {{ piece.reservedFor || 'Unknown job' }}</div>
+          <div><strong>Reservation ID:</strong> {{ piece.reservationId || 'N/A' }}</div>
+          <div><strong>Reserved Date:</strong> {{ formatDate(piece.reservedDate) }}</div>
         </div>
 
         <!-- Actions -->
         <div class="scrap-actions">
-          <button 
-            *ngIf="piece.status === 'available'" 
+          <button
+            *ngIf="piece.status === 'available'"
             class="btn btn-success btn-sm"
             (click)="reservePiece(piece)">
             📌 Reserve
           </button>
-          
-          <button 
-            *ngIf="piece.status === 'available'" 
+
+          <button
+            *ngIf="piece.status === 'available'"
             class="btn btn-danger btn-sm"
             (click)="markAsUsed(piece)">
             ✓ Mark as Used
           </button>
 
-          <button 
-            *ngIf="piece.status === 'reserved'" 
+          <button
+            *ngIf="piece.status === 'reserved'"
             class="btn btn-secondary btn-sm"
             (click)="unreservePiece(piece)">
             🔓 Unreserve
+          </button>
+
+          <button
+            *ngIf="piece.status === 'reserved'"
+            class="btn btn-danger btn-sm"
+            (click)="markAsUsed(piece)">
+            ✓ Mark as Used
           </button>
         </div>
       </div>

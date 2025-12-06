@@ -25,10 +25,10 @@ export class SawMaterialListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    // Only show available materials by default
-    this.sawMaterialService.getSawMaterials({ status: 'available' }).subscribe({
+    // Show both available and reserved materials (exclude only 'used')
+    this.sawMaterialService.getSawMaterials({}).subscribe({
       next: (response) => {
-        this.sawMaterials = response.data;
+        this.sawMaterials = response.data.filter(m => m.status !== 'used');
         this.loading = false;
       },
       error: (err) => {

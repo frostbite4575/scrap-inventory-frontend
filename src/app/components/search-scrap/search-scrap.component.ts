@@ -97,6 +97,20 @@ export class SearchScrapComponent {
     });
   }
 
+  unreservePiece(piece: ScrapPiece) {
+    if (!confirm('Are you sure you want to unreserve this piece?') || !piece._id) return;
+
+    this.scrapService.unreserveScrap(piece._id).subscribe({
+      next: () => {
+        alert('✅ Piece unreserved successfully!');
+        this.onSearch(); // Refresh results
+      },
+      error: (err) => {
+        alert(`❌ Error: ${err.error?.message || 'Failed to unreserve piece'}`);
+      }
+    });
+  }
+
   markAsUsed(piece: ScrapPiece) {
     if (!confirm('Mark this piece as used? This will remove it from available inventory.') || !piece._id) return;
 
