@@ -3,6 +3,24 @@
     <h1>Scrap Inventory System</h1>
     <h2>Login</h2>
 
+    <!-- Server Status -->
+    <div class="server-status">
+      <div *ngIf="waking" class="status-message status-waking">
+        <span class="spinner"></span>
+        Waking up server... (this may take 30-60 seconds)
+      </div>
+      <div *ngIf="serverAwake && !waking" class="status-message status-awake">
+        Server is ready!
+      </div>
+      <button
+        *ngIf="!waking && !serverAwake"
+        type="button"
+        class="btn btn-secondary"
+        (click)="wakeServer()">
+        Wake Up Server
+      </button>
+    </div>
+
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="form-group">
         <label for="username">Username</label>
@@ -39,11 +57,15 @@
       <button
         type="submit"
         class="btn btn-primary"
-        [disabled]="loading || !username || !password"
+        [disabled]="loading || !username || !password || !serverAwake"
       >
         <span *ngIf="!loading">Login</span>
         <span *ngIf="loading">Logging in...</span>
       </button>
+
+      <div *ngIf="!serverAwake && !waking" class="info-message">
+        Please wait for the server to wake up before logging in.
+      </div>
     </form>
 
     <div class="help-text">
