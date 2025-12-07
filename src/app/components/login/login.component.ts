@@ -46,22 +46,37 @@ export class LoginComponent implements OnInit {
     this.error = '';
     this.serverAwake = false;
 
-    // Ping the backend root endpoint to wake it up
+    // Try to wake the server with retries
+    this.pingServerWithRetry(0);
+  }
+
+  private pingServerWithRetry(attempt: number) {
+    const maxAttempts = 12; // 12 attempts = ~60 seconds
     const backendUrl = environment.apiUrl.replace('/api', '');
 
-    this.http.get(backendUrl, { observe: 'response' }).subscribe({
+    this.http.get(backendUrl).subscribe({
       next: () => {
         this.waking = false;
         this.serverAwake = true;
+        console.log('✅ Server is awake!');
       },
       error: (err) => {
-        // Even on error, if we got a response, the server is awake
+        console.log(`Ping attempt ${attempt + 1}/${maxAttempts}, status: ${err.status}`);
+
+        // If we got any HTTP response (even an error), server is awake
         if (err.status !== 0) {
           this.waking = false;
           this.serverAwake = true;
+          console.log('✅ Server is awake (responded with error)!');
+        } else if (attempt < maxAttempts - 1) {
+          // No response yet, retry after 5 seconds
+          setTimeout(() => {
+            this.pingServerWithRetry(attempt + 1);
+          }, 5000);
         } else {
+          // Max attempts reached
           this.waking = false;
-          this.error = 'Could not reach server. Please check your connection and try again.';
+          this.error = 'Server is taking longer than expected to wake up. Please click "Wake Up Server" to try again.';
         }
       }
     });
