@@ -1,59 +1,89 @@
-# ScrapInventoryFrontend
+# Scrap Inventory Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.3.
+A materials inventory management system built with Angular for tracking steel plate and structural steel inventory. Designed for shop floor use with plasma table and saw operations.
 
-## Development server
+## Features
 
-To start a local development server, run:
+### Plasma Table / Plate Materials
+- Add scrap pieces with dimensions (length, width, thickness)
+- Supported grades: A36, A572-50, 304SS, 316SS, 5052-H32, 6061-T6
+- Hierarchical location tracking (Area > Section > Bin)
+- Reserve pieces for job numbers, unreserve, or mark as used
+- Catalog-based material selection
 
-```bash
-ng serve
-```
+### Saw Materials
+- 9 material types: angle, tube, square-stock, round-stock, DOM, pipe, i-beam, channel, flat-bar
+- Dynamic dimension display based on material type
+- Same location and reservation workflow as plate materials
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+### Dashboards & Search
+- Statistics by grade, thickness, and material type
+- Recent activity tracking (last 7 days)
+- Advanced search with filters for dimensions, grade, location, and reservation ID
 
-## Code scaffolding
+### Authentication
+- JWT-based authentication with role support (operator, engineer, manager)
+- Protected routes with auth guard
+- Auto server wake-up for Render free tier backend
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Tech Stack
 
-```bash
-ng generate component component-name
-```
+- **Framework:** Angular 19
+- **Language:** TypeScript 5.7
+- **Styling:** Custom CSS
+- **Backend:** REST API hosted on Render
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Getting Started
 
-```bash
-ng generate --help
-```
+### Prerequisites
+- Node.js
+- npm
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Installation
 
 ```bash
-ng e2e
+npm install
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Development
 
-## Additional Resources
+```bash
+npm start
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Runs on `http://localhost:4200`. The app connects to the backend API at `http://localhost:3000/api` in development.
+
+### Production Build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/scrap-inventory-frontend/`. The production build points to the Render-hosted backend.
+
+### Tests
+
+```bash
+npm test
+```
+
+## Project Structure
+
+```
+src/app/
+├── components/
+│   ├── add-saw-material/      # Add new saw materials
+│   ├── add-scrap/             # Add new plate materials
+│   ├── dashboard/             # Plasma table stats
+│   ├── home/                  # Landing page
+│   ├── login/                 # Authentication
+│   ├── saw-dashboard/         # Saw materials stats
+│   ├── saw-material-list/     # View saw materials
+│   ├── scrap-list/            # View plate materials
+│   ├── search-saw-material/   # Search saw materials
+│   └── search-scrap/          # Search plate materials
+├── services/                  # API integration
+├── models/                    # TypeScript interfaces
+├── guards/                    # Route protection
+└── interceptors/              # JWT token injection
+```
